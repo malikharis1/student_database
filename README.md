@@ -5,6 +5,6 @@
 -   Run **composer install**
 -   Run **php artisan key:generate**
 -   That's it: launch the main URL.
--   You can login to adminpanel by going go `/login` URL and login with credentials __admin@admin.com__ - **password** or
+-   You can login to adminpanel by going go `/login` URL and login with credentials __admin@admin.com__ - **password**
 
 ---
