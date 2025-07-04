@@ -31,10 +31,21 @@ class DisciplinesController extends Controller
 
     public function store(StoreDisciplineRequest $request)
     {
-        $discipline = Discipline::create($request->all());
+        // Get all the validated input data
+        $data = $request->all();
 
-        return redirect()->route('admin.disciplines.index');
+        // Flatten semester-wise selected subjects into a single array
+        $flattenedSubjects = collect($data['subjects'] ?? [])->flatten()->toArray();
+
+        // Encode to JSON and replace original subjects input
+        $data['subjects'] = json_encode($flattenedSubjects);
+
+        // Create the discipline with updated data
+        Discipline::create($data);
+
+        return redirect()->route('admin.disciplines.index')->with('success', 'Discipline created successfully with selected subjects.');
     }
+
 
     public function edit(Discipline $discipline)
     {
@@ -45,17 +56,28 @@ class DisciplinesController extends Controller
 
     public function update(UpdateDisciplineRequest $request, Discipline $discipline)
     {
-        $discipline->update($request->all());
+        $data = $request->all();
 
-        return redirect()->route('admin.disciplines.index');
+        // Flatten and encode
+        $flattenedSubjects = collect($data['subjects'] ?? [])->flatten()->toArray();
+        $data['subjects'] = json_encode($flattenedSubjects);
+
+        $discipline->update($data);
+
+        return redirect()->route('admin.disciplines.index')->with('success', 'Discipline updated successfully.');
     }
+
 
     public function show(Discipline $discipline)
     {
         abort_if(Gate::denies('discipline_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.disciplines.show', compact('discipline'));
+        $subjects = json_decode($discipline->subjects, true);
+
+        return view('admin.disciplines.show', compact('discipline', 'subjects'));
     }
+
+
 
     public function destroy(Discipline $discipline)
     {

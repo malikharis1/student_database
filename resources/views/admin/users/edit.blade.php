@@ -1,101 +1,133 @@
 @extends('layouts.admin')
 @section('content')
 
-<div class="card">
-    <div class="card-header">
-        {{ trans('global.edit') }} {{ trans('cruds.user.title_singular') }}
+    <div class="card">
+        <div class="card-header">
+            {{ trans('global.edit') }} {{ trans('cruds.user.title_singular') }}
+        </div>
+
+        <div class="card-body">
+            <form action="{{ route("admin.users.update", [$user->id]) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                {{-- Full Name --}}
+                <div class="form-group">
+                    <label for="name">Full Name*</label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-control"
+                        required>
+                </div>
+
+                {{-- Email --}}
+                <div class="form-group">
+                    <label for="email">Email*</label>
+                    <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}"
+                        class="form-control" required>
+                </div>
+
+                {{-- Password --}}
+                <div class="form-group">
+                    <label for="password">New Password (leave blank to keep current)</label>
+                    <input type="password" name="password" id="password" class="form-control">
+                </div>
+
+                {{-- Father's Name --}}
+                <div class="form-group">
+                    <label for="father_name">Father's Name</label>
+                    <input type="text" name="father_name" id="father_name"
+                        value="{{ old('father_name', $user->father_name) }}" class="form-control">
+                </div>
+
+                {{-- Mother's Name --}}
+                <div class="form-group">
+                    <label for="mother_name">Mother's Name</label>
+                    <input type="text" name="mother_name" id="mother_name"
+                        value="{{ old('mother_name', $user->mother_name) }}" class="form-control">
+                </div>
+
+                {{-- Date of Birth --}}
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" name="dob" id="dob" value="{{ old('dob', $user->dob) }}" class="form-control">
+                </div>
+
+                {{-- Course --}}
+                <div class="form-group">
+                    <label for="course">Course</label>
+                    <select name="course" id="course" class="form-control">
+                        <option value="" disabled>Select Course</option>
+                        <option value="Computer Application" {{ $user->course == 'Computer Application' ? 'selected' : '' }}>
+                            Computer Application</option>
+                        <option value="BA" {{ $user->course == 'BA' ? 'selected' : '' }}>BA</option>
+                        <option value="BCom" {{ $user->course == 'BCom' ? 'selected' : '' }}>BCom</option>
+                        <option value="BSc Nursing" {{ $user->course == 'BSc Nursing' ? 'selected' : '' }}>BSc Nursing
+                        </option>
+                    </select>
+                </div>
+
+                {{-- Gender --}}
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" class="form-control">
+                        <option value="" disabled>Select Gender</option>
+                        <option value="Male" {{ $user->gender == 'Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ $user->gender == 'Female' ? 'selected' : '' }}>Female</option>
+                        <option value="Other" {{ $user->gender == 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div>
+
+                {{-- Religion --}}
+                <div class="form-group">
+                    <label for="religion">Religion</label>
+                    <input type="text" name="religion" id="religion" value="{{ old('religion', $user->religion) }}"
+                        class="form-control">
+                </div>
+
+                {{-- Category --}}
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" name="category" id="category" value="{{ old('category', $user->category) }}"
+                        class="form-control">
+                </div>
+
+                {{-- Registration Number (readonly) --}}
+                <div class="form-group">
+                    <label for="registration_number">Registration Number</label>
+                    <input type="text" name="registration_number" id="registration_number"
+                        value="{{ old('registration_number', $user->registration_number) }}" class="form-control" readonly>
+                </div>
+
+                {{-- Roles --}}
+                {{-- <div class="form-group">
+                    <label for="roles">Roles*
+                        <span class="btn btn-info btn-xs select-all">{{ trans('global.select_all') }}</span>
+                        <span class="btn btn-info btn-xs deselect-all">{{ trans('global.deselect_all') }}</span>
+                    </label>
+                    <select name="roles[]" id="roles" class="form-control select2" multiple required>
+                        @foreach($roles as $id => $role)
+                        <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || $user->roles->contains($id)) ?
+                            'selected' : '' }}>{{ $role }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Institution (visible only if "Institution" role is selected) --}}
+                {{-- <div class="form-group" id="institutionGroup"
+                    style="{{ (in_array(2, old('roles', [])) || $user->roles->contains(2)) ? '' : 'display:none' }}">
+                    <label for="institution">Institution</label>
+                    <select name="institution_id" id="institution" class="form-control select2">
+                        @foreach($institutions as $id => $institution)
+                        <option value="{{ $id }}" {{ ($user->institution_id == $id) ? 'selected' : '' }}>{{ $institution }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div> --}}
+
+                <div>
+                    <button class="btn btn-danger" type="submit">{{ trans('global.save') }}</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="card-body">
-        <form action="{{ route("admin.users.update", [$user->id]) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                <label for="name">{{ trans('cruds.user.fields.name') }}*</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($user) ? $user->name : '') }}" required>
-                @if($errors->has('name'))
-                    <em class="invalid-feedback">
-                        {{ $errors->first('name') }}
-                    </em>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.user.fields.name_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-                <label for="email">{{ trans('cruds.user.fields.email') }}*</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ old('email', isset($user) ? $user->email : '') }}" required>
-                @if($errors->has('email'))
-                    <em class="invalid-feedback">
-                        {{ $errors->first('email') }}
-                    </em>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.user.fields.email_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-                <label for="password">{{ trans('cruds.user.fields.password') }}</label>
-                <input type="password" id="password" name="password" class="form-control">
-                @if($errors->has('password'))
-                    <em class="invalid-feedback">
-                        {{ $errors->first('password') }}
-                    </em>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.user.fields.password_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }}">
-                <label for="roles">{{ trans('cruds.user.fields.roles') }}*
-                    <span class="btn btn-info btn-xs select-all">{{ trans('global.select_all') }}</span>
-                    <span class="btn btn-info btn-xs deselect-all">{{ trans('global.deselect_all') }}</span></label>
-                <select name="roles[]" id="roles" class="form-control select2" multiple="multiple" required>
-                    @foreach($roles as $id => $roles)
-                        <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || isset($user) && $user->roles->contains($id)) ? 'selected' : '' }}>{{ $roles }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('roles'))
-                    <em class="invalid-feedback">
-                        {{ $errors->first('roles') }}
-                    </em>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.user.fields.roles_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('institution_id') ? 'has-error' : '' }}" id="institutionGroup" style="{{ (in_array(2, old('roles', [])) || isset($user) && $user->roles->contains(2)) ? '' : 'display:none'}}">
-                <label for="institution">{{ trans('cruds.user.fields.institution') }}</label>
-                <select name="institution_id" id="institution" class="form-control select2">
-                    @foreach($institutions as $id => $institution)
-                        <option value="{{ $id }}" {{ (isset($user) && $user->institution ? $user->institution->id : old('institution_id')) == $id ? 'selected' : '' }}>{{ $institution }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('institution_id'))
-                    <em class="invalid-feedback">
-                        {{ $errors->first('institution_id') }}
-                    </em>
-                @endif
-            </div>
-            <div>
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
-            </div>
-        </form>
-
-
-    </div>
-</div>
-@endsection
-
-@section('scripts')
-<script>
-$(document).ready(function() {
-    $('#roles').change(function() {
-        if($("#roles option:selected:contains('Institution')").val())
-            $("#institutionGroup:hidden").show(150);
-        else
-            $("#institutionGroup:visible").hide(150);
-    });
-});
-</script>
 @endsection

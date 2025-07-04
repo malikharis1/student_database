@@ -22,6 +22,7 @@ class Discipline extends Model
         'created_at',
         'updated_at',
         'deleted_at',
+        'subjects',
     ];
 
     public function courses()
