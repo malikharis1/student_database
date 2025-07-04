@@ -86,18 +86,7 @@ class EnrollmentController extends Controller
         return redirect()->route('enroll.create', $course->id);
     }
 
-    public function myCourses()
-    {
-        $breadcrumb = "My Courses";
 
-        $userEnrollments = auth()->user()
-            ->enrollments()
-            ->with('course.institution')
-            ->orderBy('id', 'desc')
-            ->paginate(6);
-
-        return view('enrollment.courses', compact(['breadcrumb', 'userEnrollments']));
-    }
 
     public function updateEmail(Request $request, $id)
     {
